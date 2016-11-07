@@ -1,0 +1,29 @@
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {//采用拓扑排序的思想，判断这些图是不是拓扑图
+        vector<vector<int>>graph(numCourses);
+        vector<int>indegrees(numCourses,0);
+        for(auto it:prerequisites)
+        {
+            graph[it.second].push_back(it.first);//下标代表的是起点，下标对应的vector装的是尾点
+            ++indegrees[it.first];//下标代表的是某一点，数值代表的是入度
+        }
+        deque<int>sources;//用vector也是可以的
+        int searched=0;
+        for(int i=0;i<indegrees.size();i++)
+        {
+            if(indegrees[i]==0) sources.push_back(i);//将入度为0的点装入sources
+        }
+        while(!sources.empty())
+        {
+            int v=sources.front();//删除入度为0的点
+            sources.pop_front();
+            ++searched;//删除一个点，加一个点，直到删除完为止
+            for(auto c:graph[v])//删除后，将与此点连接的点入度减1
+            {
+               if(--indegrees[c]==0) sources.push_back(c);//减过后的入度若为0，则又可以成为一个起始点进行删除 
+            }
+        }
+        return searched==numCourses;
+    }
+};
